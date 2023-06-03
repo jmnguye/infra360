@@ -11,16 +11,25 @@ DOMAINS = {
 
 api = Namespace("domains", description="family class")
 
-domain_fields = api.model("Domain", {"label": fields.String, "value": fields.String})
+domain_fields = api.model(
+    "Domain",
+    {
+        "label": fields.String(required=True, description="Label displayed"),
+        "value": fields.String(required=True, description="Value"),
+    },
+)
 domains_dict_fields = api.model(
     "DomainsDict",
     {
-        "domains": fields.List(fields.Nested(domain_fields)),
+        "domains": fields.List(
+            fields.Nested(domain_fields), description="List of domains"
+        ),
     },
 )
 
 
 @api.route("")
+@api.doc(domains_dict_fields)
 class Domains(Resource):
     @api.marshal_with(domains_dict_fields)
     def get(self):
