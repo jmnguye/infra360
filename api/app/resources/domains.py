@@ -29,11 +29,11 @@ domains_dict_fields = api.model(
 
 
 @api.route("")
-@api.doc(domains_dict_fields)
 class Domains(Resource):
     @api.marshal_with(domains_dict_fields)
     def get(self):
         return DOMAINS
 
+    @api.expect(domain_fields)
     def post(self):
         pass
