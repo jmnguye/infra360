@@ -1,11 +1,13 @@
 from flask_restx import Resource, Namespace, fields
-from flask import current_app
+from app.models.domain import DomainDAO
+from app.models.domains import DomainsDAO
+import json
 
 DOMAINS = {
     "domains": [
-        {"id": 1, "label": "Compute", "value": "Compute"},
-        {"id": 2, "label": "Network", "value": "Network"},
-        {"id": 3, "label": "Storage", "value": "Storage"},
+        DomainDAO(1, "Compute", "Compute"),
+        DomainDAO(2, "Network", "Network"),
+        DomainDAO(3, "Storage", "Storage"),
     ]
 }
 
@@ -36,36 +38,46 @@ domains_dict_fields = api.model(
         ),
     },
 )
+domain_put_fields = api.model(
+    "DomainPut",
+    {
+        "label": fields.String(description="Label displayed"),
+        "value": fields.String(description="Value"),
+    },
+    strict=True,
+)
 
 
-class DomainsDAO:
-    def __init__(self, domains):
-        self.domains = domains
-
-    def add(self, data):
-        data["id"] = self.get_id()
-        self.domains["domains"].append(data)
-
-    def get_id(self):
-        reserved_id = [domain["id"] for domain in self.domains.get("domains")]
-        for index in range(1, 1000):
-            if index not in reserved_id:
-                return index
-
-
-DAO = DomainsDAO(DOMAINS)
+domainsDAO = DomainsDAO(DOMAINS)
 
 
 @api.route("")
 class Domains(Resource):
     @api.marshal_with(domains_dict_fields)
     def get(self):
-        return DAO.domains
+        return domainsDAO.domains
 
+    @api.marshal_with(domains_dict_fields)
     @api.expect(domain_post_fields, validate=True)
-    @api.doc(expect=domain_post_fields)
-    def post(
-        self,
-    ):
-        DAO.add(api.payload)
-        return DAO.domains
+    def post(self):
+        return domainsDAO.add(api.payload)
+
+
+@api.route("/<int:id>")
+class Domain(Resource):
+    @api.marshal_with(domain_get_fields)
+    @api.expect(domain_put_fields, validate=True)
+    def put(self, id):
+        domainJson = self.get(id)
+        domain = DomainDAO.domainFactory(domainJson)
+        updatedDomain = domain.update(api.payload)
+        domainsDAO.update(updatedDomain)
+        return json.loads(updatedDomain.json())
+
+    def get(self, id):
+        domain = domainsDAO.get_by(id)
+        return json.loads(domain.json())
+
+
+# on va mettre la modification avec le put
+# on va ajouter la suppression avec le delete
