@@ -1,4 +1,3 @@
-import json
 from app.models.domain import DomainDAO
 from flask import abort
 
@@ -23,7 +22,6 @@ class DomainsDAO:
     def get_by(self, id) -> DomainDAO:
         for domain in self.domains["domains"]:
             if domain.id == id:
-                # return json.loads(domain.json())
                 return domain
         abort(404, "domain id not found")
 
@@ -33,6 +31,12 @@ class DomainsDAO:
                 self.domains["domains"].remove(existing_domain)
                 self.domains["domains"].append(domain)
                 return
+        abort(404, "domain id not found")
+
+    def delete(self, domain: DomainDAO) -> None:
+        for existing_domain in self.domains["domains"]:
+            if existing_domain.id == domain.id:
+                self.domains["domains"].remove(existing_domain)
         abort(404, "domain id not found")
 
     def __str__(self):
