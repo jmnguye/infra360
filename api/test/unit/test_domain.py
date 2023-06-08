@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_get_representation_of_client(client):
     response = client.get("/domains/1")
     ref = {"id": 1, "label": "Compute", "value": "Compute"}
@@ -19,9 +22,10 @@ def test_missing_id(client):
     assert "domain id not found" in response.json.get("message")
 
 
+@pytest.mark.delete
 def test_delete_id(client):
     response = client.delete("/domains/1")
-    assert response.status_code == 200
+    assert response.status_code == 204
     response = client.get("/domains/1")
     assert "domain id not found" in response.json.get("message")
 

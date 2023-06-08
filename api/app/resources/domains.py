@@ -73,6 +73,7 @@ class Domain(Resource):
         domainsDAO.update(updatedDomain)
         return json.loads(updatedDomain.json()), 200
 
+    @api.expect(domain_get_fields)
     def get(self, id):
         domain = domainsDAO.get_by(id)
         return json.loads(domain.json()), 200
@@ -82,8 +83,8 @@ class Domain(Resource):
         # les autres tests qui utilise l'id ne passe plus
         # lorsque je lance les tests via le swagger, le domain est supprime
         # mais j'ai quand meme un message d'erreur qui dit qu'il ne trouve pas l'id
-        # domain = domainsDAO.get_by(id)
-        domainJson = self.get(id)
-        domain = DomainDAO.domainFactory(domainJson)
+        # domainJson = self.get(id)
+        # domain = DomainDAO.domainFactory(domainJson)
+        domain = domainsDAO.get_by(id)
         domainsDAO.delete(domain)
         return "", 204

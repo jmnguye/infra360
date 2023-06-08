@@ -37,6 +37,7 @@ class DomainsDAO:
         for existing_domain in self.domains["domains"]:
             if existing_domain.id == domain.id:
                 self.domains["domains"].remove(existing_domain)
+                return
         abort(404, "domain id not found")
 
     def __str__(self):
