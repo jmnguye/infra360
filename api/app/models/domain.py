@@ -15,10 +15,6 @@ class DomainDAO:
     def json(self):
         return json.dumps({"id": self.id, "label": self.label, "value": self.value})
 
-    @classmethod
-    def domainFactory(cls, data):
-        return cls(data.get("id"), data.get("label"), data.get("value"))
-
     def update(self, data):
         print(list(data))
         for key in list(data):

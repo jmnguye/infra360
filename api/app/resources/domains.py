@@ -55,11 +55,13 @@ domainsDAO = DomainsDAO(DOMAINS)
 class Domains(Resource):
     @api.marshal_with(domains_dict_fields)
     def get(self):
+        """Get the list of all domains"""
         return domainsDAO.domains, 200
 
     @api.marshal_with(domains_dict_fields)
     @api.expect(domain_post_fields, validate=True)
     def post(self):
+        """Add a new domain"""
         return domainsDAO.add(api.payload), 200
 
 
@@ -68,6 +70,7 @@ class Domain(Resource):
     @api.marshal_with(domain_get_fields)
     @api.expect(domain_put_fields, validate=True)
     def put(self, id):
+        """Modify an existing domain"""
         domain = domainsDAO.get_by(id)
         updatedDomain = domain.update(api.payload)
         domainsDAO.update(updatedDomain)
@@ -75,16 +78,12 @@ class Domain(Resource):
 
     @api.expect(domain_get_fields)
     def get(self, id):
+        """Get details of a domain"""
         domain = domainsDAO.get_by(id)
         return json.loads(domain.json()), 200
 
     def delete(self, id):
-        # TODO on dirait que je casse d'autres test qd je passe par cette method
-        # les autres tests qui utilise l'id ne passe plus
-        # lorsque je lance les tests via le swagger, le domain est supprime
-        # mais j'ai quand meme un message d'erreur qui dit qu'il ne trouve pas l'id
-        # domainJson = self.get(id)
-        # domain = DomainDAO.domainFactory(domainJson)
+        """Delete a domain"""
         domain = domainsDAO.get_by(id)
         domainsDAO.delete(domain)
         return "", 204
