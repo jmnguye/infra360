@@ -1,7 +1,9 @@
 import json
+from typing import Callable
 
 
-def test_tmpdir_factory(db_init):
+# Typage douteux, a verifier
+def test_tmpdir_factory(db_init: Callable) -> None:
     with db_init.open() as file:
         data = json.load(file)
         print(data["domains"][0])
