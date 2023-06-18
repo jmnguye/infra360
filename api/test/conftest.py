@@ -1,20 +1,43 @@
 import pytest
+import json
 from app import create_app
+from app.models.domain import DomainDAO
+from typing import TextIO, Callable, Iterable
+from flask import Flask
+from flask.testing import FlaskClient
 
 
-@pytest.fixture
-def app():
+def db_session(tmpdir_factory: Callable) -> TextIO:
+    DOMAINS = {
+        "domains": [
+            json.dumps(DomainDAO(1, "Compute", "Compute").__dict__),
+            json.dumps(DomainDAO(2, "Network", "Network").__dict__),
+            json.dumps(DomainDAO(3, "Storage", "Storage").__dict__),
+        ]
+    }
+    tmp_file = tmpdir_factory.mktemp("temp").join("test.db")
+    with tmp_file.open("w") as f:
+        json.dump(DOMAINS, f)
+    return tmp_file
+
+
+@pytest.fixture(scope="session")
+def app(tmpdir_factory: Callable) -> Iterable[Flask]:
     app = create_app()
     app.config.update(
         {
             "TESTING": True,
         }
     )
-    # setup section : genre config db
+    db_session(tmpdir_factory)
     yield app
-    # teardown section : genre clean de db
 
 
 @pytest.fixture
-def client(app):
+def client(app: Flask) -> FlaskClient:
     return app.test_client()
+
+
+@pytest.fixture
+def db_init(tmpdir_factory: Callable) -> TextIO:
+    return db_session(tmpdir_factory)

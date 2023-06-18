@@ -3,6 +3,13 @@ from app.models.domain import DomainDAO
 from app.models.domains import DomainsDAO
 import json
 
+# TODO 1: on va mettre en place la partie BDD,
+# notemment pour les tests avec fixture
+# TODO 2: On va mettre en place de l'authentification
+# avec JWTtoken : ref
+# https://aaronluna.dev/series/flask-api-tutorial/part-1/
+
+
 DOMAINS = {
     "domains": [
         DomainDAO(1, "Compute", "Compute"),
