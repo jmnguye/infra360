@@ -1,9 +1,8 @@
 import json
-from typing import Callable
+from _pytest._py.path import LocalPath
 
 
-# Typage douteux, a verifier
-def test_tmpdir_factory(db_init: Callable) -> None:
+def test_tmpdir_factory(db_init: LocalPath) -> None:
     with db_init.open() as file:
         data = json.load(file)
         print(data["domains"][0])

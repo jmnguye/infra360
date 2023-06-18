@@ -2,12 +2,13 @@ import pytest
 import json
 from app import create_app
 from app.models.domain import DomainDAO
-from typing import TextIO, Callable, Iterable
+from typing import Callable, Iterable
 from flask import Flask
 from flask.testing import FlaskClient
+from _pytest._py.path import LocalPath
 
 
-def db_session(tmpdir_factory: Callable) -> TextIO:
+def db_session(tmpdir_factory: Callable) -> LocalPath:
     DOMAINS = {
         "domains": [
             json.dumps(DomainDAO(1, "Compute", "Compute").__dict__),
@@ -39,5 +40,5 @@ def client(app: Flask) -> FlaskClient:
 
 
 @pytest.fixture
-def db_init(tmpdir_factory: Callable) -> TextIO:
+def db_init(tmpdir_factory: Callable) -> LocalPath:
     return db_session(tmpdir_factory)
